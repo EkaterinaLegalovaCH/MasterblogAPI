@@ -41,8 +41,28 @@ def del_post(id):
         new_data = [item for item in POSTS if int(item['id']) != id]
         POSTS = new_data
         return jsonify({'message': 'Post deleted successfully'}), 201
-    return jsonify({'message': 'Incorrect data'}), 400
+    return jsonify({'message': 'Post with this id not found'}), 400
 
+
+@app.route('/api/posts/<int:id>', methods=['PUT'])
+def update_post(id):
+    global POSTS
+
+    request_data = request.json  # Get the JSON data from the request body
+    title = request_data.get('title')
+    content = request_data.get('content')
+
+    # Find the index of the post with the given ID
+    post_index = next((index for index, post in enumerate(POSTS) if int(post['id']) == id), None)
+
+    if post_index is not None:
+        if title is not None and content is not None:
+            POSTS[post_index]['title'] = title
+            POSTS[post_index]['content'] = content
+            return jsonify({'message': 'Post was successfully updated'}), 200
+        return jsonify({'message': 'Incorrect data'}), 400
+
+    return jsonify({'message': 'Post with this ID not found'}), 404
 
 
 
