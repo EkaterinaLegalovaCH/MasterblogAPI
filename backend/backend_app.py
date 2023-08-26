@@ -61,9 +61,29 @@ def update_post(id):
             POSTS[post_index]['content'] = content
             return jsonify({'message': 'Post was successfully updated'}), 200
         return jsonify({'message': 'Incorrect data'}), 400
-
     return jsonify({'message': 'Post with this ID not found'}), 404
 
+
+@app.route('/api/posts/search', methods=['GET'])
+def search_post():
+    title = request.args.get('title')
+    content = request.args.get('content')
+    search_result = []
+    if title or content:
+        for post in POSTS:
+            if title is not None:
+                if title.lower() in post['title'].lower():
+                    search_result.append(post)
+                elif content is not None:
+                    if content.lower() in post['content'].lower():
+                        search_result.append(post)
+            elif content is not None:
+                if content.lower() in post['content'].lower():
+                    search_result.append(post)
+        if search_result:
+            return jsonify(search_result), 200
+        else:
+            return jsonify({'message': 'No matching posts found'}), 404
 
 
 if __name__ == '__main__':
