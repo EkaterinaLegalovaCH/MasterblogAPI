@@ -8,10 +8,23 @@ POSTS = [
     {"id": 1, "title": "First post", "content": "This is the first post."},
     {"id": 2, "title": "Second post", "content": "This is the second post."},
 ]
+def sort_f(my_list, field, direction):
+    sorted_list = sorted(my_list, key=lambda x: x[field], reverse=direction)
+    return sorted_list
 
 
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+    global POSTS
+    sort = request.args.get('sort')
+    direction = request.args.get('direction')
+    if sort and direction:
+        if direction == 'desc':
+            order = True
+        else:
+            order = False
+        POSTS = sort_f(POSTS, sort, order)
+        return jsonify(POSTS)
     return jsonify(POSTS)
 
 
